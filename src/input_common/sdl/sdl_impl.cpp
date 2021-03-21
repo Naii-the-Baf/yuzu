@@ -215,6 +215,14 @@ void SDLState::InitJoystick(int joystick_index) {
 
     if (SDL_IsGameController(joystick_index)) {
         sdl_gamecontroller = SDL_GameControllerOpen(joystick_index);
+        if (SDL_GameControllerHasSensor(sdl_gamecontroller, SDL_SENSOR_ACCEL)) {
+            LOG_ERROR(Input, "This controller supports accelerometer");
+            SDL_GameControllerSetSensorEnabled(sdl_gamecontroller, SDL_SENSOR_ACCEL, SDL_TRUE);
+        }
+        if (SDL_GameControllerHasSensor(sdl_gamecontroller, SDL_SENSOR_GYRO)) {
+            LOG_ERROR(Input, "This controller supports gyro");
+            SDL_GameControllerSetSensorEnabled(sdl_gamecontroller, SDL_SENSOR_GYRO, SDL_TRUE);
+        }
     }
 
     if (!sdl_joystick) {
@@ -286,6 +294,19 @@ void SDLState::HandleGameControllerEvent(const SDL_Event& event) {
         }
         break;
     }
+    case SDL_SENSORUPDATE:
+        switch (event.csensor.type) {
+        case SDL_SENSOR_ACCEL:
+            LOG_ERROR(Input, "Accel {}", event.csensor.data[0]);
+            break;
+        case SDL_SENSOR_GYRO:
+            LOG_ERROR(Input, "Gyro {}", event.csensor.data[0]);
+            break;
+        default:
+            LOG_ERROR(Input, "Unknow {}", event.csensor.data[0]);
+            break;
+        }
+        break;
     case SDL_JOYDEVICEREMOVED:
         LOG_DEBUG(Input, "Controller removed with Instance_ID {}", event.jdevice.which);
         CloseJoystick(SDL_JoystickFromInstanceID(event.jdevice.which));
@@ -707,10 +728,14 @@ SDLState::SDLState() {
     RegisterFactory<VibrationDevice>("sdl", vibration_factory);
     RegisterFactory<MotionDevice>("sdl", motion_factory);
 
+    SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
+    SDL_SetHint(SDL_HINT_AUTO_UPDATE_SENSORS, "1");
+
     // If the frontend is going to manage the event loop, then we don't start one here
     start_thread = SDL_WasInit(SDL_INIT_JOYSTICK) == 0;
     if (start_thread && SDL_Init(SDL_INIT_JOYSTICK) < 0) {
-        LOG_CRITICAL(Input, "SDL_Init(SDL_INIT_JOYSTICK) failed with: {}", SDL_GetError());
+        LOG_CRITICAL(Input, "SDL_Init(SDL_INIT_JOYSTICK) failed with: {}",
+                     SDL_GetError());
         return;
     }
     has_gamecontroller = SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) != 0;
@@ -750,7 +775,7 @@ SDLState::~SDLState() {
     initialized = false;
     if (start_thread) {
         poll_thread.join();
-        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
     }
 }
 
@@ -940,6 +965,8 @@ ButtonMapping SDLState::GetButtonMappingForDevice(const Common::ParamPackage& pa
     if (controller == nullptr) {
         return {};
     }
+    const bool is_pro_controller =
+        SDL_GameControllerGetType(controller) == SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO;
 
     const bool invert =
         SDL_GameControllerGetType(controller) != SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO;

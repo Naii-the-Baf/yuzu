@@ -19,6 +19,10 @@ add_library(input_common STATIC
     mouse/mouse_input.h
     mouse/mouse_poller.cpp
     mouse/mouse_poller.h
+    tas/tas_input.cpp
+    tas/tas_input.h
+    tas/tas_poller.cpp
+    tas/tas_poller.h
     sdl/sdl.cpp
     sdl/sdl.h
     udp/client.cpp
