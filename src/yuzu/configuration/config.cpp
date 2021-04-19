@@ -220,7 +220,7 @@ const std::array<int, Settings::NativeKeyboard::NumKeyboardMods> Config::default
 // This must be in alphabetical order according to action name as it must have the same order as
 // UISetting::values.shortcuts, which is alphabetically ordered.
 // clang-format off
-const std::array<UISettings::Shortcut, 17> Config::default_hotkeys{{
+const std::array<UISettings::Shortcut, 20> Config::default_hotkeys{{
     {QStringLiteral("Capture Screenshot"),       QStringLiteral("Main Window"), {QStringLiteral("Ctrl+P"), Qt::WidgetWithChildrenShortcut}},
     {QStringLiteral("Change Docked Mode"),       QStringLiteral("Main Window"), {QStringLiteral("F10"), Qt::ApplicationShortcut}},
     {QStringLiteral("Continue/Pause Emulation"), QStringLiteral("Main Window"), {QStringLiteral("F4"), Qt::WindowShortcut}},
@@ -238,6 +238,9 @@ const std::array<UISettings::Shortcut, 17> Config::default_hotkeys{{
     {QStringLiteral("Toggle Mouse Panning"),     QStringLiteral("Main Window"), {QStringLiteral("Ctrl+F9"), Qt::ApplicationShortcut}},
     {QStringLiteral("Toggle Speed Limit"),       QStringLiteral("Main Window"), {QStringLiteral("Ctrl+Z"), Qt::ApplicationShortcut}},
     {QStringLiteral("Toggle Status Bar"),        QStringLiteral("Main Window"), {QStringLiteral("Ctrl+S"), Qt::WindowShortcut}},
+    {QStringLiteral("TAS Start/Stop"),           QStringLiteral("Main Window"), {QStringLiteral("Ctrl+F5"), Qt::ApplicationShortcut}},
+    {QStringLiteral("TAS Reset"),                QStringLiteral("Main Window"), {QStringLiteral("Ctrl+F6"), Qt::ApplicationShortcut}},
+    {QStringLiteral("TAS Record"),                QStringLiteral("Main Window"), {QStringLiteral("Ctrl+F7"), Qt::ApplicationShortcut}},
 }};
 // clang-format on
 
@@ -508,7 +511,8 @@ void Config::ReadControlValues() {
 
     Settings::values.emulate_analog_keyboard =
         ReadSetting(QStringLiteral("emulate_analog_keyboard"), false).toBool();
-    Settings::values.mouse_panning = false;
+    Settings::values.tas_enable = false;
+    Settings::values.tas_reset = false;
     Settings::values.mouse_panning_sensitivity =
         ReadSetting(QStringLiteral("mouse_panning_sensitivity"), 1).toFloat();
 
@@ -620,6 +624,8 @@ void Config::ReadDataStorageValues() {
         ReadSetting(QStringLiteral("gamecard_current_game"), false).toBool();
     Settings::values.gamecard_path =
         ReadSetting(QStringLiteral("gamecard_path"), QString{}).toString().toStdString();
+    Settings::values.tas_path =
+        ReadSetting(QStringLiteral("tas_path"), QString{}).toString().toStdString();
 
     qt_config->endGroup();
 }
@@ -1226,6 +1232,8 @@ void Config::SaveDataStorageValues() {
                  false);
     WriteSetting(QStringLiteral("gamecard_path"),
                  QString::fromStdString(Settings::values.gamecard_path), QString{});
+    WriteSetting(QStringLiteral("tas_path"),
+                 QString::fromStdString(Settings::values.tas_path), QString{});
 
     qt_config->endGroup();
 }

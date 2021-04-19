@@ -889,7 +889,8 @@ void ConfigureInputPlayer::UpdateUI() {
         auto& param = analogs_param[analog_id];
         const bool is_controller = param.Get("engine", "") == "sdl" ||
                                    param.Get("engine", "") == "gcpad" ||
-                                   param.Get("engine", "") == "mouse";
+                                   param.Get("engine", "") == "mouse" ||
+                                   param.Get("engine", "") == "tas";
 
         if (is_controller) {
             if (!param.Has("deadzone")) {

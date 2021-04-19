@@ -1482,50 +1482,50 @@ void Hid::StopSevenSixAxisSensor(Kernel::HLERequestContext& ctx) {
 }
 
 void Hid::InitializeSevenSixAxisSensor(Kernel::HLERequestContext& ctx) {
-    IPC::RequestParser rp{ctx};
-    const auto applet_resource_user_id{rp.Pop<u64>()};
-    const auto handle_size1{rp.Pop<u64>()};
-    const auto handle_size2{rp.Pop<u64>()};
-    const auto handle1{rp.Pop<Kernel::Handle>()};
-    const auto handle2{rp.Pop<Kernel::Handle>()};
-    auto& kernel = system.Kernel();
-    // auto transfer =
-    //    Kernel::TransferMemory::Create(kernel, system.Memory(), addr,
-    //    handle_size1,Kernel::Memory::MemoryPermission::Read);
-    // auto transfer2 =
-    //    Kernel::TransferMemory::Create(kernel, system.Memory(), addr,
-    //    handle_size1,Kernel::Memory::MemoryPermission::None);
-    auto transfer_mem =
-        system.CurrentProcess()->GetHandleTable().Get<Kernel::TransferMemory>(handle1);
-    auto transfer_mem2 =
-        system.CurrentProcess()->GetHandleTable().Get<Kernel::TransferMemory>(handle2);
-    LOG_ERROR(Service_HID,
-              "(STUBBED) called, applet_resource_user_id={}, transfer_memory_size_first={}, "
-              "transfer_memory_size_second={}, transfer_memory_handle_first={}, "
-              "transfer_memory_handle_second={}",
-              applet_resource_user_id, handle_size1, handle_size2, handle1, handle2);
+    //IPC::RequestParser rp{ctx};
+    //const auto applet_resource_user_id{rp.Pop<u64>()};
+    //const auto handle_size1{rp.Pop<u64>()};
+    //const auto handle_size2{rp.Pop<u64>()};
+    //const auto handle1{rp.Pop<Kernel::Handle>()};
+    //const auto handle2{rp.Pop<Kernel::Handle>()};
+    //auto& kernel = system.Kernel();
+    //// auto transfer =
+    ////    Kernel::TransferMemory::Create(kernel, system.Memory(), addr,
+    ////    handle_size1,Kernel::Memory::MemoryPermission::Read);
+    //// auto transfer2 =
+    ////    Kernel::TransferMemory::Create(kernel, system.Memory(), addr,
+    ////    handle_size1,Kernel::Memory::MemoryPermission::None);
+    //auto transfer_mem =
+    //    system.CurrentProcess()->GetHandleTable().Get<Kernel::TransferMemory>(handle1);
+    //auto transfer_mem2 =
+    //    system.CurrentProcess()->GetHandleTable().Get<Kernel::TransferMemory>(handle2);
+    //LOG_ERROR(Service_HID,
+    //          "(STUBBED) called, applet_resource_user_id={}, transfer_memory_size_first={}, "
+    //          "transfer_memory_size_second={}, transfer_memory_handle_first={}, "
+    //          "transfer_memory_handle_second={}",
+    //          applet_resource_user_id, handle_size1, handle_size2, handle1, handle2);
 
-    if (transfer_mem == nullptr) {
-        LOG_ERROR(Service_HID, "shared_mem is a nullpr for handle={:08X}", handle1);
-        IPC::ResponseBuilder rb{ctx, 2};
-        rb.Push(RESULT_UNKNOWN);
-        return;
-    }
+    //if (transfer_mem == nullptr) {
+    //    LOG_ERROR(Service_HID, "shared_mem is a nullpr for handle={:08X}", handle1);
+    //    IPC::ResponseBuilder rb{ctx, 2};
+    //    rb.Push(RESULT_UNKNOWN);
+    //    return;
+    //}
 
-    if (transfer_mem2 == nullptr) {
-        LOG_ERROR(Service_HID, "shared_mem is a nullpr for handle={:08X}", handle2);
-        IPC::ResponseBuilder rb{ctx, 2};
-        rb.Push(RESULT_UNKNOWN);
-        return;
-    }
+    //if (transfer_mem2 == nullptr) {
+    //    LOG_ERROR(Service_HID, "shared_mem is a nullpr for handle={:08X}", handle2);
+    //    IPC::ResponseBuilder rb{ctx, 2};
+    //    rb.Push(RESULT_UNKNOWN);
+    //    return;
+    //}
 
-    const u8* const mem_begin = transfer_mem->GetPointer();
-    const u8* const mem_end = mem_begin + transfer_mem->GetSize();
-    std::vector<u8> memory{mem_begin, mem_end};
+    //const u8* const mem_begin = transfer_mem->GetPointer();
+    //const u8* const mem_end = mem_begin + transfer_mem->GetSize();
+    //std::vector<u8> memory{mem_begin, mem_end};
 
-    const u8* const mem_begin2 = transfer_mem2->GetPointer();
-    const u8* const mem_end2 = mem_begin2 + transfer_mem2->GetSize();
-    std::vector<u8> memory2{mem_begin2, mem_end2};
+    //const u8* const mem_begin2 = transfer_mem2->GetPointer();
+    //const u8* const mem_end2 = mem_begin2 + transfer_mem2->GetSize();
+    //std::vector<u8> memory2{mem_begin2, mem_end2};
 
     IPC::ResponseBuilder rb{ctx, 2};
     rb.Push(RESULT_SUCCESS);
