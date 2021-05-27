@@ -14,7 +14,8 @@
 #include "common/settings.h"
 #include "common/logging/log.h"
 #include "input_common/tas/tas_input.h"
-#include "common/file_util.h"
+#include "common/fs/file.h"
+#include "common/fs/fs.h"
 
 namespace TasInput {
 
@@ -37,8 +38,8 @@ namespace TasInput {
         if (!commands.empty()) {
             commands.clear();
         }
-        std::string file = "";
-        LOG_ERROR(Input, "file reloaded {}", Common::FS::ReadFileToString(true, Settings::values.tas_path, file));
+        std::string file = Common::FS::ReadStringFromFile(Settings::values.tas_path,
+                                                 Common::FS::FileType::TextFile);
         std::stringstream command_line(file);
         std::string line;
         while (std::getline(command_line, line, '\n')) {
@@ -69,8 +70,7 @@ namespace TasInput {
                 if ((buttons & 1) != (buttons_old & 1)) {
                     if (buttons & 1) {
                         press_line_bits += 1 << index;
-                    }
-                    else {
+                    } else {
                         release_line_bits += 1 << index;
                     }
                 }
@@ -104,8 +104,9 @@ namespace TasInput {
             output_text += "\n";
             prev_line = line;
         }
-        LOG_CRITICAL(Input, "{}", output_text);
-        Common::FS::WriteStringToFile(true, Settings::values.tas_path, output_text);
+        LOG_CRITICAL(Input, "bytes written {}",
+                     Common::FS::WriteStringToFile(Settings::values.tas_path,
+                                                   Common::FS::FileType::TextFile, output_text));
     }
 
     void Tas::RecordInput(u32 buttons, std::array<std::pair<float, float>, 2> axes, bool changed) {
